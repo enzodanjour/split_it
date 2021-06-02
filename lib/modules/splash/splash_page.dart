@@ -1,8 +1,31 @@
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:split_it/themes/app_theme.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
+
+  @override
+  _SplashPageState createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  void initializaFirebase() async {
+    try {
+      await Firebase.initializeApp();
+      await Future.delayed(Duration(seconds: 2));
+      Navigator.pushNamed(context, "/login");
+    } catch (e) {
+      Navigator.pushNamed(context, "/error");
+    }
+  }
+
+  @override
+  void initState() {
+    initializaFirebase();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +33,7 @@ class SplashPage extends StatelessWidget {
       top: true,
       bottom: true,
       child: Scaffold(
-        backgroundColor: AppTheme.colors.background,
+        backgroundColor: AppTheme.colors.backgroundSecondary,
         body: Container(
           width: double.maxFinite,
           height: double.maxFinite,
@@ -74,7 +97,6 @@ class SplashPage extends StatelessWidget {
                           'assets/images/retangulo-esq.png',
                           width: 128,
                           height: 112,
-                          
                         ),
                       )
                     ],

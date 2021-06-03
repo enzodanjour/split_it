@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:split_it/modules/login/login_controller.dart';
+import 'package:split_it/modules/login/login_services.dart';
+import 'package:split_it/modules/login/login_state.dart';
 import 'package:split_it/modules/login/widgets/social_button.dart';
 import 'package:split_it/themes/app_theme.dart';
 
@@ -10,6 +15,26 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  //afirma que inicializará mais tarde
+  late LoginController controller;
+
+  @override
+  void initState() {
+    
+    controller = LoginController(
+      service: LoginServiceImpl(),
+      onUpdate: () {
+      if (controller.state is LoginStateSucess) {
+        final user = (controller.state as LoginStateSucess).user;
+        Navigator.pushReplacementNamed(context, "/home", arguments: user);
+      } else {
+        setState(() {});
+      }
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,19 +68,28 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 32,
             ),
-            SocialButton(
-              imagePath: 'assets/images/google.png',
-              label: 'Entrar com Google',
-              onTap: () {},
-            ),
+            if (controller.state is LoginStateLoading) ...[
+              CircularProgressIndicator(),
+            ] else if (controller.state is LoginStateFailure) ...[
+              Text((controller.state as LoginStateFailure).message,
+                  style: AppTheme.textStyles.button),
+            ] else
+              SocialButton(
+                imagePath: 'assets/images/google.png',
+                label: 'Entrar com Google',
+                onTap: () async {
+                  controller.googleSignIn();
+                },
+              ),
             SizedBox(
               height: 12,
             ),
-            SocialButton(
-              imagePath: 'assets/images/apple.png',
-              label: 'Entrar com Apple',
-              onTap: () {},
-            )
+            //TODO VER DEPOIS ESSE LOGIN APPLE
+            // SocialButton(
+            //   imagePath: 'assets/images/apple.png',
+            //   label: 'Entrar com Apple',
+            //   onTap: () {},
+            // )
           ],
         )
       ],
